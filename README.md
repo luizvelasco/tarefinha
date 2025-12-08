@@ -1,4 +1,4 @@
-Projeto criado durante o curso de Laravel 12 e Vue.js.
+Projeto criado durante o curso de VuePro, módulo básico, sistema Tarefinha.
 
 ## Requisitos
 
@@ -57,7 +57,7 @@ http://localhost:5173/
 
 ## Autor
 
-Este projeto foi desenvolvido por [Cesar Szpak](https://github.com/cesarszpak) e está hospedado no repositório da organização [Celke](https://github.com/celkecursos).
+Este projeto foi desenvolvido por [Luiz Velasco](https://github.com/luizvelasco).
 
 ## Licença
 
