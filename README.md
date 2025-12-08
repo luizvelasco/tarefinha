@@ -40,6 +40,11 @@ Instalar as dependências.
 npm install
 ```
 
+Engenharia de CSS
+```
+npm install bootstrap sass
+```
+
 Compilar e recarregar durante o desenvolvimento.
 ```
 npm run dev
