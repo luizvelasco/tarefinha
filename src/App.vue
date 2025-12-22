@@ -6,7 +6,11 @@ const tasks = ref([]);
 
 const addTask = () => {
   if(!newTask.value.trim()) return; // Prevent adding empty tasks
-  tasks.value.push(newTask.value);
+  tasks.value.push({
+    name: newTask.value.trim(), // Add trimmed task name
+    completed: false, // New tasks are not completed by default
+    state: 'show' // edit, delete
+  });
   newTask.value = '';  // Clear input after adding
 }
 
@@ -66,14 +70,16 @@ const addTask = () => {
     </div> -->
 
     <!-- Tasks -->
-    <!-- <ul class="list-group">
-      <li class="list-group-item d-flex align-items-center gap-2">
+    <ul class="list-group">
+      <li
+        v-for="task in tasks" :key="task.name"
+        class="list-group-item d-flex align-items-center gap-2">
         <input type="checkbox" class="form-check-input">
-        <span class="flex-grow-1">Refatorar componente de login</span>
+        <span class="flex-grow-1">{{ task.name }}</span>
         <button class="btn btn-primary btn-sm">Editar</button>
         <button class="btn btn-danger btn-sm">Excluir</button>
       </li>
-      <li class="list-group-item d-flex align-items-center gap-2">
+      <!-- <li class="list-group-item d-flex align-items-center gap-2">
         <input type="checkbox" class="form-check-input" checked>
         <span class="flex-grow-1 text-decoration-line-through text-muted">Escrever testes unitários</span>
         <button class="btn btn-primary btn-sm">Editar</button>
@@ -92,8 +98,8 @@ const addTask = () => {
         </span>
         <button class="btn btn-danger btn-sm">Sim, excluir</button>
         <button class="btn btn-outline-secondary btn-sm">Cancelar</button>
-      </li>
-    </ul> -->
+      </li> -->
+    </ul>
 
     <!-- Empty state -->
     <!-- <div class="card bg-light">
