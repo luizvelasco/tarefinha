@@ -1,110 +1,175 @@
 <script setup>
+// Importa a função ref, usada para criar estados reativos no Vue 3
 import { ref } from 'vue';
 
+/**
+ * Estado reativo para armazenar o texto digitado
+ * no input de nova tarefa
+ */
 const newTask = ref('');
+
+/**
+ * Lista reativa de tarefas
+ * Cada tarefa será um objeto com:
+ * - name: nome da tarefa
+ * - completed: se está concluída ou não
+ * - state: estado visual ('show' ou 'edit')
+ */
 const tasks = ref([]);
 
+/**
+ * Adiciona uma nova tarefa à lista
+ */
 const addTask = () => {
-  if(!newTask.value.trim()) return; // Prevent adding empty tasks
-  tasks.value.push({
-    name: newTask.value.trim(), // Add trimmed task name
-    completed: false, // New tasks are not completed by default
-    state: 'show' // edit, delete
-  });
-  newTask.value = '';  // Clear input after adding
-}
+  // Impede adicionar tarefa vazia ou só com espaços
+  if (!newTask.value.trim()) return;
 
+  // Adiciona a nova tarefa ao array
+  tasks.value.push({
+    name: newTask.value.trim(), // Nome sem espaços extras
+    completed: false,           // Nova tarefa começa como não concluída
+    state: 'show'               // Estado inicial é visualização
+  });
+
+  // Limpa o campo de input após adicionar
+  newTask.value = '';
+};
+
+/**
+ * Coloca a tarefa em modo de edição
+ * Faz backup dos valores originais
+ */
+const editTask = (task) => {
+  // Salva o nome original caso ainda não exista backup
+  if (!Object.hasOwn(task, '_name')) {
+    task._name = task.name;
+  }
+
+  // Salva o estado original de concluído
+  if (!Object.hasOwn(task, '_completed')) {
+    task._completed = task.completed;
+  }
+
+  // Altera o estado para edição
+  task.state = 'edit';
+};
+
+/**
+ * Confirma as alterações feitas na edição
+ */
+const commitTask = (task) => {
+  // Atualiza o nome com o valor editado
+  if (Object.hasOwn(task, '_name')) {
+    task.name = task._name;
+  }
+
+  // Atualiza o status de concluído
+  if (Object.hasOwn(task, '_completed')) {
+    task.completed = task._completed;
+  }
+
+  // Volta para o modo de visualização
+  task.state = 'show';
+};
 </script>
 
 <template>
-<div class="container" style="max-width: 800px;">
+  <div class="container" style="max-width: 800px;">
+    
+    <!-- Título da aplicação -->
     <h1 class="text-center my-4">Tarefinha</h1>
-    
-    <!-- Stats -->
-    <!-- <div class="card mb-3">
-      <div class="card-body">
-        <div class="row text-center">
-          <div class="col-4">
-            <div class="fw-bold fs-4">3</div>
-            <div class="text-muted small">Total</div>
-          </div>
-          <div class="col-4">
-            <div class="fw-bold fs-4 text-success">1</div>
-            <div class="text-muted small">Concluídas</div>
-          </div>
-          <div class="col-4">
-            <div class="fw-bold fs-4 text-warning">2</div>
-            <div class="text-muted small">Pendentes</div>
-          </div>
-        </div>
-      </div>
-    </div> -->
-    
-    <!-- Add new task -->
+
+    <!-- Campo para adicionar nova tarefa -->
     <div class="input-group mb-3">
-      <input 
-        v-model="newTask"
-        type="text" 
-        placeholder="Adicionar uma nova tarefa..." 
+      <input
+        v-model="newTask"                     
+        type="text"
+        placeholder="Adicionar uma nova tarefa..."
         class="form-control"
-        @keyup.enter="addTask"
+        @keyup.enter="addTask"                
       >
-      <button 
-        @click="addTask"
+      <button
+        @click="addTask"                      
         class="btn btn-success">
         Adicionar
       </button>
     </div>
 
+    <!-- Debug: mostra o array de tarefas em tempo real -->
     <pre>{{ tasks }}</pre>
 
-    <!-- Filters -->
-    <!-- <div class="d-flex gap-2 mb-3">
-      <input type="text" placeholder="Buscar tarefa..." class="form-control" style="flex: 1;">
-      <select class="form-select" style="flex: 1;">
-        <option value="">Todas</option>
-        <option value="pending">Pendentes</option>
-        <option value="completed">Concluídas</option>
-      </select>
-      <button class="btn btn-outline-secondary btn-sm" style="flex-shrink: 0;">Limpar filtros</button>
-    </div> -->
-
-    <!-- Tasks -->
+    <!-- Lista de tarefas -->
     <ul class="list-group">
       <li
-        v-for="task in tasks" :key="task.name"
-        class="list-group-item d-flex align-items-center gap-2">
-        <input type="checkbox" v-model="task.completed" class="form-check-input">
-        <span 
-          class="flex-grow-1"
-          :class="task.completed ? 'text-decoration-line-through text-muted' : null"
-        >{{ task.name }}</span>
-        <button class="btn btn-primary btn-sm">Editar</button>
-        <button class="btn btn-danger btn-sm">Excluir</button>
+        v-for="task in tasks"                 
+        :key="task.name"                      
+        class="list-group-item d-flex align-items-center gap-2"
+      >
+
+        <!-- MODO VISUALIZAÇÃO -->
+        <template v-if="task.state === 'show'">
+          <!-- Checkbox de concluído -->
+          <input
+            type="checkbox"
+            v-model="task.completed"
+            class="form-check-input"
+          >
+
+          <!-- Nome da tarefa -->
+          <span
+            class="flex-grow-1"
+            :class="task.completed
+              ? 'text-decoration-line-through text-muted'
+              : null"
+          >
+            {{ task.name }}
+          </span>
+
+          <!-- Botão editar -->
+          <button
+            class="btn btn-primary btn-sm"
+            @click="editTask(task)">
+            Editar
+          </button>
+
+          <!-- Botão excluir (ainda não implementado) -->
+          <button class="btn btn-danger btn-sm">
+            Excluir
+          </button>
+        </template>
+
+        <!-- MODO EDIÇÃO -->
+        <template v-else-if="task.state === 'edit'">
+          <!-- Checkbox editável -->
+          <input
+            type="checkbox"
+            v-model="task._completed"
+            class="form-check-input"
+          >
+
+          <!-- Input para editar o nome -->
+          <input
+            type="text"
+            v-model="task._name"
+            class="form-control form-control-sm"
+          >
+
+          <!-- Salvar alterações -->
+          <button
+            class="btn btn-success btn-sm"
+            @click="commitTask(task)">
+            Salvar
+          </button>
+
+          <!-- Cancelar edição -->
+          <button
+            class="btn btn-secondary btn-sm"
+            @click="task.state = 'show'">
+            Cancelar
+          </button>
+        </template>
+
       </li>
-     
-      <!-- <li class="list-group-item d-flex align-items-center gap-2"> 
-        <input type="checkbox" class="form-check-input">
-        <input type="text" value="Corrigir bug no modal" class="form-control form-control-sm">
-        <button class="btn btn-success btn-sm">Salvar</button>
-        <button class="btn btn-secondary btn-sm">Cancelar</button>
-      </li>
-      <li class="list-group-item d-flex align-items-center gap-2">
-        <span class="flex-grow-1">
-          <div class="fw-semibold">Atualizar documentação da API</div>
-          <div class="text-muted small">Tem certeza que deseja remover?</div>
-        </span>
-        <button class="btn btn-danger btn-sm">Sim, excluir</button>
-        <button class="btn btn-outline-secondary btn-sm">Cancelar</button>
-      </li> -->
     </ul>
-
-    <!-- Empty state -->
-    <!-- <div class="card bg-light">
-      <div class="card-body text-center py-5">
-        <p class="text-muted mb-0">Nenhuma tarefa cadastrada</p>
-      </div>
-    </div> -->
-</div>
-
+  </div>
 </template>
