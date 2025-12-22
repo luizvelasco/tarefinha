@@ -74,18 +74,16 @@ const addTask = () => {
       <li
         v-for="task in tasks" :key="task.name"
         class="list-group-item d-flex align-items-center gap-2">
-        <input type="checkbox" class="form-check-input">
-        <span class="flex-grow-1">{{ task.name }}</span>
+        <input type="checkbox" v-model="task.completed" class="form-check-input">
+        <span 
+          class="flex-grow-1"
+          :class="task.completed ? 'text-decoration-line-through text-muted' : null"
+        >{{ task.name }}</span>
         <button class="btn btn-primary btn-sm">Editar</button>
         <button class="btn btn-danger btn-sm">Excluir</button>
       </li>
-      <!-- <li class="list-group-item d-flex align-items-center gap-2">
-        <input type="checkbox" class="form-check-input" checked>
-        <span class="flex-grow-1 text-decoration-line-through text-muted">Escrever testes unitários</span>
-        <button class="btn btn-primary btn-sm">Editar</button>
-        <button class="btn btn-danger btn-sm">Excluir</button>
-      </li>
-      <li class="list-group-item d-flex align-items-center gap-2">
+     
+      <!-- <li class="list-group-item d-flex align-items-center gap-2"> 
         <input type="checkbox" class="form-check-input">
         <input type="text" value="Corrigir bug no modal" class="form-control form-control-sm">
         <button class="btn btn-success btn-sm">Salvar</button>
