@@ -26,6 +26,7 @@ const addTask = () => {
 
   // Adiciona a nova tarefa ao array
   tasks.value.push({
+    id: Date.now(),        // ID único baseado no timestamp
     name: newTask.value.trim(), // Nome sem espaços extras
     completed: false,           // Nova tarefa começa como não concluída
     state: 'show'               // Estado inicial é visualização
@@ -71,6 +72,18 @@ const commitTask = (task) => {
   // Volta para o modo de visualização
   task.state = 'show';
 };
+
+const deleteTask = (task) => {
+  // const index = tasks.value.indexOf(task);
+  // if (index > -1) {
+  //   tasks.value.splice(index, 1);
+  // }
+
+  const index = tasks.value.findIndex(o => o.id === task.id);
+  if (index > -1) {
+    tasks.value.splice(index, 1);
+  }
+};  
 </script>
 
 <template>
@@ -138,7 +151,7 @@ const commitTask = (task) => {
     <ul class="list-group">
       <li
         v-for="task in tasks"                 
-        :key="task.name"                      
+        :key="task.id"                      
         class="list-group-item d-flex align-items-center gap-2"
       >
 
@@ -169,7 +182,7 @@ const commitTask = (task) => {
           </button>
 
           <!-- Botão excluir (ainda não implementado) -->
-          <button class="btn btn-danger btn-sm">
+          <button class="btn btn-danger btn-sm" @click="task.state = 'delete'">
             Excluir
           </button>
         </template>
@@ -204,17 +217,17 @@ const commitTask = (task) => {
             Cancelar
           </button>
         </template>
-
+        
+        <template v-else-if="task.state === 'delete'">
+          <span class="flex-grow-1"> 
+            <div class="fw-semibold">{{ task.name }}</div> 
+            <div class="text-muted small">Tem certeza que deseja remover?</div> 
+          </span> 
+          <button class="btn btn-danger btn-sm" @click="deleteTask(task)">Sim, excluir</button> 
+          <button class="btn btn-outline-secondary btn-sm" @click="task.state = 'show'">Cancelar</button> 
+        </template>
+      
       </li>
-      <!-- 
-      <li class="list-group-item d-flex align-items-center gap-2"> 
-        <span class="flex-grow-1"> 
-          <div class="fw-semibold">Atualizar documentação da API</div> 
-          <div class="text-muted small">Tem certeza que deseja remover?</div> 
-        </span> 
-        <button class="btn btn-danger btn-sm">Sim, excluir</button> 
-        <button class="btn btn-outline-secondary btn-sm">Cancelar</button> 
-      </li> -->
     </ul>
     <!-- Empty state --> 
     <!-- <div class="card bg-light"> 
