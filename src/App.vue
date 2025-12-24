@@ -1,6 +1,6 @@
 <script setup>
 // Importa a função ref, usada para criar estados reativos no Vue 3
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 
 /**
  * Estado reativo para armazenar o texto digitado
@@ -16,6 +16,39 @@ const newTask = ref('');
  * - state: estado visual ('show' ou 'edit')
  */
 const tasks = ref([]);
+
+/**
+ * Estados para filtros de busca e status
+ */
+const filterSearch = ref('');
+
+/**
+ * Estado do filtro de status:  
+ * "" (todas), "pending" (pendentes), "completed" (concluídas)
+ */
+const filterStatus = ref('');
+
+const filteredTasks = computed(() => {
+  let output = tasks.value;
+
+  if(filterSearch.value) {
+    const search = filterSearch.value.toLowerCase();
+    output = output.filter(o => o.name.toLowerCase().includes(search));
+  }
+
+  if(filterStatus.value === 'pending') {
+    return output.filter(o => !o.completed);
+  } else if(filterStatus.value === 'completed') {
+    output = output.filter(o => o.completed);
+  }
+
+  return output;
+}); 
+
+const clearFilters = () => {
+  filterSearch.value = '';
+  filterStatus.value = '';  
+};
 
 /**
  * Adiciona uma nova tarefa à lista
@@ -128,29 +161,27 @@ const deleteTask = (task) => {
       </button>
     </div>
 
-    <!-- Debug: mostra o array de tarefas em tempo real -->
-    <pre>{{ tasks }}</pre>
-
     <!-- Filters --> 
-    <!-- <div class="d-flex gap-2 mb-3"> 
+    <div class="d-flex gap-2 mb-3"> 
       <input type="text" placeholder="Buscar tarefa..." 
         class="form-control" 
         style="flex: 1;"
+        v-model="filterSearch"
       > 
-      <select class="form-select" style="flex: 1;"> 
+      <select class="form-select" style="flex: 1;" v-model="filterStatus"> 
         <option value="">Todas</option> 
         <option value="pending">Pendentes</option> 
         <option value="completed">Concluídas</option> 
       </select> 
-      <button class="btn btn-outline-secondary btn-sm" style="flex-shrink: 0;">
+      <button @click="clearFilters" class="btn btn-outline-secondary btn-sm" style="flex-shrink: 0;">
         Limpar filtros
       </button> 
-    </div> -->
+    </div>
 
     <!-- Lista de tarefas -->
     <ul class="list-group">
       <li
-        v-for="task in tasks"                 
+        v-for="task in filteredTasks"                 
         :key="task.id"                      
         class="list-group-item d-flex align-items-center gap-2"
       >
