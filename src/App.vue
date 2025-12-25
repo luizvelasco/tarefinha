@@ -117,6 +117,14 @@ const deleteTask = (task) => {
     tasks.value.splice(index, 1);
   }
 };  
+
+const emptyStateMessage = computed(() => {
+  let output = 'Nenhuma tarefa cadastrada';
+  if(filterSearch.search || filterStatus.value) {
+    return 'Nenhuma tarefa encontrada com os filtros aplicados';
+  }
+  return output
+});
 </script>
 
 <template>
@@ -162,7 +170,9 @@ const deleteTask = (task) => {
     </div>
 
     <!-- Filters --> 
-    <div class="d-flex gap-2 mb-3"> 
+    <div v-if="tasks.length"
+      class="d-flex gap-2 mb-3"
+    > 
       <input type="text" placeholder="Buscar tarefa..." 
         class="form-control" 
         style="flex: 1;"
@@ -261,10 +271,15 @@ const deleteTask = (task) => {
       </li>
     </ul>
     <!-- Empty state --> 
-    <!-- <div class="card bg-light"> 
+    <div
+      v-if="!filteredTasks.length"
+      class="card bg-light"
+    > 
       <div class="card-body text-center py-5"> 
-        <p class="text-muted mb-0">Nenhuma tarefa cadastrada</p> 
+        <p class="text-muted mb-0">
+          {{ emptyStateMessage }}
+        </p> 
       </div> 
-    </div> -->
+    </div>
   </div>
 </template>
