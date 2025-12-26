@@ -2,12 +2,7 @@
 // Importa a função ref, usada para criar estados reativos no Vue 3
 import { ref, computed } from 'vue';
 import TaskStats from './components/TaskStats.vue';
-
-/**
- * Estado reativo para armazenar o texto digitado
- * no input de nova tarefa
- */
-const newTask = ref('');
+import TaskInput from './components/TaskInput.vue';
 
 /**
  * Lista reativa de tarefas
@@ -54,20 +49,18 @@ const clearFilters = () => {
 /**
  * Adiciona uma nova tarefa à lista
  */
-const addTask = () => {
+const addTask = (task) => {
   // Impede adicionar tarefa vazia ou só com espaços
-  if (!newTask.value.trim()) return;
+  if (!task) { return };
 
   // Adiciona a nova tarefa ao array
   tasks.value.push({
     id: Date.now(),        // ID único baseado no timestamp
-    name: newTask.value.trim(), // Nome sem espaços extras
+    name: task.trim(), // Nome sem espaços extras
     completed: false,           // Nova tarefa começa como não concluída
     state: 'show'               // Estado inicial é visualização
   });
 
-  // Limpa o campo de input após adicionar
-  newTask.value = '';
 };
 
 /**
@@ -138,21 +131,8 @@ const emptyStateMessage = computed(() => {
     <!-- Stats --> 
     <TaskStats :tasks="tasks" />
 
-    <!-- Campo para adicionar nova tarefa -->
-    <div class="input-group mb-3">
-      <input
-        v-model="newTask"                     
-        type="text"
-        placeholder="Adicionar uma nova tarefa..."
-        class="form-control"
-        @keyup.enter="addTask"                
-      >
-      <button
-        @click="addTask"                      
-        class="btn btn-success">
-        Adicionar
-      </button>
-    </div>
+    <!-- Add New Task -->
+    <TaskInput @add-task="addTask" />
 
     <!-- Filters --> 
     <div v-if="tasks.length"
