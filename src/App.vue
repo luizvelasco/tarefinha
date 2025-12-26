@@ -3,6 +3,7 @@
 import { ref, computed } from 'vue';
 import TaskStats from './components/TaskStats.vue';
 import TaskInput from './components/TaskInput.vue';
+import TaskFilter from './components/TaskFilter.vue';
 
 /**
  * Lista reativa de tarefas
@@ -40,6 +41,14 @@ const filteredTasks = computed(() => {
 
   return output;
 }); 
+
+const onSearch = (search) => {
+  filterSearch.value = search;
+};
+
+const onStatus = (status) => {
+  filterStatus.value = status;
+};
 
 const clearFilters = () => {
   filterSearch.value = '';
@@ -101,11 +110,6 @@ const commitTask = (task) => {
 };
 
 const deleteTask = (task) => {
-  // const index = tasks.value.indexOf(task);
-  // if (index > -1) {
-  //   tasks.value.splice(index, 1);
-  // }
-
   const index = tasks.value.findIndex(o => o.id === task.id);
   if (index > -1) {
     tasks.value.splice(index, 1);
@@ -135,23 +139,11 @@ const emptyStateMessage = computed(() => {
     <TaskInput @add-task="addTask" />
 
     <!-- Filters --> 
-    <div v-if="tasks.length"
-      class="d-flex gap-2 mb-3"
-    > 
-      <input type="text" placeholder="Buscar tarefa..." 
-        class="form-control" 
-        style="flex: 1;"
-        v-model="filterSearch"
-      > 
-      <select class="form-select" style="flex: 1;" v-model="filterStatus"> 
-        <option value="">Todas</option> 
-        <option value="pending">Pendentes</option> 
-        <option value="completed">Concluídas</option> 
-      </select> 
-      <button @click="clearFilters" class="btn btn-outline-secondary btn-sm" style="flex-shrink: 0;">
-        Limpar filtros
-      </button> 
-    </div>
+    <TaskFilter 
+      v-if="tasks.length"
+      @search="onSearch"
+      @status="onStatus"
+    />  
 
     <!-- Lista de tarefas -->
     <ul class="list-group">
