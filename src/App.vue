@@ -5,6 +5,7 @@ import TaskStats from './components/TaskStats.vue';
 import TaskInput from './components/TaskInput.vue';
 import TaskFilter from './components/TaskFilter.vue';
 import TaskList from './components/TaskList.vue';
+import TaskEmptyState from './components/TaskEmptyState.vue';
 
 /**
  * Lista reativa de tarefas
@@ -116,15 +117,9 @@ const emptyStateMessage = computed(() => {
     />
 
     <!-- Empty state --> 
-    <div
-      v-if="!filteredTasks.length"
-      class="card bg-light"
-    > 
-      <div class="card-body text-center py-5"> 
-        <p class="text-muted mb-0">
-          {{ emptyStateMessage }}
-        </p> 
-      </div> 
-    </div>
+    <TaskEmptyState
+      v-if="!filteredTasks.length" 
+      :message="emptyStateMessage"  
+    />
   </div>
 </template>
